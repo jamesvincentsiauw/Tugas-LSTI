@@ -1,0 +1,250 @@
+{
+  "openapi" : "3.0.0",
+  "servers" : [ {
+    "description" : "SwaggerHub API Auto Mocking",
+    "url" : "https://virtserver.swaggerhub.com/jamesvincentsiauw/tubes_lasti/1.0.0"
+  }, {
+    "url" : "https://127.0.0.1:8080/usm"
+  } ],
+  "info" : {
+    "description" : "API Penerimaan Mahasiswa Baru",
+    "version" : "1.0.0",
+    "title" : "Penerimaan Mahasiswa Baru Kelompok 1",
+    "contact" : {
+      "email" : "jamesvincentsiauw@gmail.com"
+    },
+    "license" : {
+      "name" : "Apache 2.0",
+      "url" : "http://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  },
+  "tags" : [ {
+    "name" : "admins",
+    "description" : "Khusus pencatatan data"
+  }, {
+    "name" : "developers",
+    "description" : "Khusus pencarian data"
+  } ],
+  "paths" : {
+    "/requirements" : {
+      "get" : {
+        "tags" : [ "developers" ],
+        "summary" : "get required file",
+        "operationId" : "getRequirements",
+        "description" : "Endpoint ini akan memberikan informasi mengenai berkas-berkas yang harus disiapkan untuk melakukan pendaftaran sebagai mahasiswa baru melalui jalur seleksi mandiri",
+        "responses" : {
+          "200" : {
+            "description" : "search results matching criteria",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : {
+                    "jalur" : {
+                      "type" : "string",
+                      "format" : "jalur",
+                      "example" : "Seleksi Mandiri"
+                    },
+                    "files" : {
+                      "type" : "array",
+                      "items" : {
+                        "$ref" : "#/components/schemas/RequiredFiles"
+                      },
+                      "example" : [ {
+                        "id" : "SM5627",
+                        "files" : "Ijazah SMA"
+                      }, {
+                        "id" : "SM3671",
+                        "files" : "Fotokopi KTP"
+                      } ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "bad input parameter"
+          },
+          "500" : {
+            "description" : "internal server error"
+          }
+        }
+      }
+    },
+    "/jadwal" : {
+      "get" : {
+        "tags" : [ "developers" ],
+        "responses" : {
+          "200" : {
+            "description" : "search results matching criteria",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : {
+                    "jalur" : {
+                      "type" : "string",
+                      "format" : "jalur",
+                      "example" : "Seleksi Mandiri"
+                    },
+                    "files" : {
+                      "type" : "array",
+                      "items" : {
+                        "$ref" : "#/components/schemas/TahapanSeleksi"
+                      },
+                      "example" : [ {
+                        "tanggal" : "15 Okktober 2019",
+                        "kegiatan" : "Batas akhir pendaftaran peserta seleksi"
+                      }, {
+                        "tanggal" : "2 Desember 2019",
+                        "kegiatan" : "Pengumuman peserta lolos seleksi"
+                      } ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "bad input parameter"
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "admins" ],
+        "requestBody" : {
+          "content" : {
+            "application/x-www-form-urlencoded" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/TahapanSeleksi"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "Data berhasil dimasukan",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/TahapanSeleksi"
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "bad request"
+          },
+          "500" : {
+            "description" : "internal server error"
+          }
+        }
+      }
+    },
+    "/user/{id}/file" : {
+      "get" : {
+        "tags" : [ "developers" ],
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "menampilkan daftar berkas yang belum di upload oleh peserta",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : {
+                    "idPeserta" : {
+                      "type" : "string",
+                      "format" : "idPeserta",
+                      "example" : 182719991
+                    },
+                    "uploadedFiles" : {
+                      "type" : "array",
+                      "items" : {
+                        "$ref" : "#/components/schemas/Files"
+                      },
+                      "example" : [ {
+                        "id" : "SM5627",
+                        "files" : "Ijazah SMA",
+                        "uploadedAt" : "7 Oktober 2019",
+                        "verified" : true
+                      }, {
+                        "id" : "SM3671",
+                        "files" : "Fotokopi KTP",
+                        "uploadedAt" : "11 Oktober 2019",
+                        "verified" : false
+                      } ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "RequiredFiles" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string",
+            "format" : "id"
+          },
+          "files" : {
+            "type" : "string",
+            "format" : "file"
+          }
+        }
+      },
+      "TahapanSeleksi" : {
+        "type" : "object",
+        "required" : [ "tanggal", "kegiatan" ],
+        "properties" : {
+          "tanggal" : {
+            "type" : "string",
+            "format" : "date"
+          },
+          "kegiatan" : {
+            "type" : "string",
+            "format" : "activity"
+          }
+        }
+      },
+      "Files" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string",
+            "format" : "id"
+          },
+          "files" : {
+            "type" : "string",
+            "format" : "file"
+          },
+          "uploadedAt" : {
+            "type" : "string",
+            "format" : "uploadedAt",
+            "description" : "tanggal upload file"
+          },
+          "verified" : {
+            "type" : "boolean"
+          }
+        }
+      }
+    }
+  }
+}
