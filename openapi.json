@@ -4,7 +4,7 @@
     "description" : "SwaggerHub API Auto Mocking",
     "url" : "https://virtserver.swaggerhub.com/jamesvincentsiauw/tubes_lasti/1.0.0"
   }, {
-    "url" : "https://127.0.0.1:8080/usm"
+    "url" : "http://178.128.104.74/pengelolaanjalurseleksipmb/"
   } ],
   "info" : {
     "description" : "API Penerimaan Mahasiswa Baru",
@@ -20,15 +20,15 @@
   },
   "tags" : [ {
     "name" : "admins",
-    "description" : "Khusus pencatatan data"
+    "description" : "Khusus admin sistem"
   }, {
-    "name" : "developers",
-    "description" : "Khusus pencarian data"
+    "name" : "students",
+    "description" : "Khusus pendaftar/masyarakat"
   } ],
   "paths" : {
     "/requirements" : {
       "get" : {
-        "tags" : [ "developers" ],
+        "tags" : [ "students" ],
         "summary" : "get required file",
         "operationId" : "getRequirements",
         "description" : "Endpoint ini akan memberikan informasi mengenai berkas-berkas yang harus disiapkan untuk melakukan pendaftaran sebagai mahasiswa baru melalui jalur seleksi mandiri",
@@ -72,12 +72,61 @@
         }
       }
     },
-    "/jadwal" : {
-      "get" : {
-        "tags" : [ "developers" ],
+    "/jadwal/{id}" : {
+      "put" : {
+        "tags" : [ "admins" ],
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/x-www-form-urlencoded" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/TahapanSeleksi"
+              }
+            }
+          }
+        },
         "responses" : {
           "200" : {
-            "description" : "search results matching criteria",
+            "description" : "Data updated"
+          },
+          "400" : {
+            "description" : "bad input parameter"
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "admins" ],
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Data deleted"
+          },
+          "400" : {
+            "description" : "bad input parameter"
+          }
+        }
+      }
+    },
+    "/jadwal" : {
+      "get" : {
+        "tags" : [ "students" ],
+        "responses" : {
+          "200" : {
+            "description" : "Success",
             "content" : {
               "application/json" : {
                 "schema" : {
@@ -145,9 +194,9 @@
         }
       }
     },
-    "/user/{id}/file" : {
+    "/user/files/{id}" : {
       "get" : {
-        "tags" : [ "developers" ],
+        "tags" : [ "students", "admins" ],
         "parameters" : [ {
           "in" : "path",
           "name" : "id",
@@ -193,6 +242,39 @@
           }
         }
       }
+    },
+    "/requirements/{id}" : {
+      "post" : {
+        "description" : "upload file berdasarkan id pendaftar",
+        "summary" : "upload file berdasarkan id pendaftar",
+        "tags" : [ "students" ],
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "id",
+          "description" : "idSeleksiPendaftar",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/x-www-form-urlencoded" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/Files"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "data uploaded"
+          },
+          "400" : {
+            "description" : "bad parameter request"
+          }
+        }
+      }
     }
   },
   "components" : {
@@ -227,7 +309,7 @@
       "Files" : {
         "type" : "object",
         "properties" : {
-          "id" : {
+          "idFiles" : {
             "type" : "string",
             "format" : "id"
           },
