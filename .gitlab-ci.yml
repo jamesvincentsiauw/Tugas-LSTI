@@ -1,0 +1,14 @@
+stages:
+  - deploy
+ 
+deploy-master:
+  tags:
+    - smartcampus
+    - platform
+  stage: deploy
+  script:
+    - lasti pengelolaanjalurseleksipmb nodejs
+  environment:
+    name: production
+  only:
+    - master
