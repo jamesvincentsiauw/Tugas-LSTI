@@ -11,12 +11,12 @@ const pool = new Pool({
     port: process.env.DB_PORT
 });
 
-function verifyToken(req){
-    if (req.headers["x-access-token"]==="877ABO1Q6Y0Z!"){
-        return true
+function verifyToken(req, callback){
+    if (req.query.token==="8t7aBO1Q6Y0ZcC76A"){
+        callback(true)
     }
     else{
-        return false
+        callback(false)
     }
 }
 router.get('/', function (req,res) {
@@ -31,44 +31,46 @@ router.get('/', function (req,res) {
 router.post('/jadwal',function (req, res) {
     let ret;
     try {
-        if (verifyToken(req)) {
-            const id = randomize('A0', 20);
-            const tanggalMulai = req.body.tanggalMulai;
-            const tanggalAkhir = req.body.tanggalAkhir;
-            const kegiatan = req.body.kegiatan;
-            if (tanggalMulai && tanggalAkhir && kegiatan) {
-                pool.query("INSERT INTO jadwal(id,tanggalmulai,tanggalselesai,kegiatan) VALUES ($1,$2,$3,$4)", [id, tanggalMulai, tanggalAkhir, kegiatan], err => {
-                    if (err) {
-                        throw err
-                    } else {
-                        ret = {
-                            status: 200,
-                            description: 'Data Inserted',
-                            results: {
-                                id: id,
-                                tanggalMulai: tanggalMulai,
-                                tanggalAkhir: tanggalAkhir,
-                                kegiatan: kegiatan,
-                            }
-                        };
-                        res.status(200).json(ret)
-                    }
-                })
-            } else {
-                ret = {
-                    status: 400,
-                    results: 'Parameter Kurang'
-                };
-                res.status(400).json(ret);
+        verifyToken(req, function (hasil) {
+            if (hasil){
+                const id = randomize('A0', 20);
+                const tanggalMulai = req.body.tanggalMulai;
+                const tanggalAkhir = req.body.tanggalAkhir;
+                const kegiatan = req.body.kegiatan;
+                if (tanggalMulai && tanggalAkhir && kegiatan) {
+                    pool.query("INSERT INTO jadwal(id,tanggalmulai,tanggalselesai,kegiatan) VALUES ($1,$2,$3,$4)", [id, tanggalMulai, tanggalAkhir, kegiatan], err => {
+                        if (err) {
+                            throw err
+                        } else {
+                            ret = {
+                                status: 200,
+                                description: 'Data Inserted',
+                                results: {
+                                    id: id,
+                                    tanggalMulai: tanggalMulai,
+                                    tanggalAkhir: tanggalAkhir,
+                                    kegiatan: kegiatan,
+                                }
+                            };
+                            res.status(200).json(ret)
+                        }
+                    })
+                } else {
+                    ret = {
+                        status: 400,
+                        results: 'Parameter Kurang'
+                    };
+                    res.status(400).json(ret);
+                }
             }
-        }
-        else{
-            ret = {
-                status: 401,
-                results: 'Maneh Sokap wak! Bukan admin maneh!'
-            };
-            res.status(401).json(ret)
-        }
+            else{
+                 ret = {
+                     status: 401,
+                     results: 'Maneh Sokap wak! Bukan admin maneh!'
+                 };
+                 res.status(401).json(ret)
+            }
+        });
     }
     catch (e) {
         res.send(e.message)
@@ -77,43 +79,47 @@ router.post('/jadwal',function (req, res) {
 router.put('/jadwal/:id',function (req,res) {
     let ret;
     try {
-        if (verifyToken(req)) {
-            const id = req.params.id;
-            const tanggalMulai = req.body.tanggalMulai;
-            const tanggalAkhir = req.body.tanggalAkhir;
-            const kegiatan = req.body.kegiatan;
-            if (tanggalMulai && tanggalAkhir && kegiatan) {
-                pool.query("UPDATE jadwal SET tanggalmulai=$1,tanggalselesai=$2,kegiatan=$3 WHERE id=$4", [tanggalMulai, tanggalAkhir, kegiatan, id], err => {
-                    if (err) {
-                        throw err
-                    } else {
-                        ret = {
-                            status: 200,
-                            description: 'Data Updated',
-                            results: {
-                                id: id,
-                                tanggalMulai: tanggalMulai,
-                                tanggalAkhir: tanggalAkhir,
-                                kegiatan: kegiatan,
-                            }
-                        };
-                        res.status(200).json(ret)
-                    }
-                })
-            } else {
-                ret = {
-                    status: 400,
-                    results: 'Parameter Kurang'
-                };
-                res.status(400).json(ret);
+        verifyToken(req, function (hasil) {
+            if (hasil){
+                const id = req.params.id;
+                const tanggalMulai = req.body.tanggalMulai;
+                const tanggalAkhir = req.body.tanggalAkhir;
+                const kegiatan = req.body.kegiatan;
+                if (tanggalMulai && tanggalAkhir && kegiatan) {
+                    pool.query("UPDATE jadwal SET tanggalmulai=$1,tanggalselesai=$2,kegiatan=$3 WHERE id=$4", [tanggalMulai, tanggalAkhir, kegiatan, id], err => {
+                        if (err) {
+                            throw err
+                        } else {
+                            ret = {
+                                status: 200,
+                                description: 'Data Updated',
+                                results: {
+                                    id: id,
+                                    tanggalMulai: tanggalMulai,
+                                    tanggalAkhir: tanggalAkhir,
+                                    kegiatan: kegiatan,
+                                }
+                            };
+                            res.status(200).json(ret)
+                        }
+                    })
+                }
+                else{
+                    ret = {
+                        status: 400,
+                        results: 'Parameter Kurang'
+                    };
+                    res.status(400).json(ret);
+                }
             }
-        } else {
-            ret = {
-                status: 401,
-                results: 'Maneh Sokap wak! Bukan admin maneh!'
-            };
-            res.status(401).json(ret)
-        }
+            else{
+                ret = {
+                    status: 401,
+                    results: 'Maneh Sokap wak! Bukan admin maneh!'
+                };
+                res.status(401).json(ret)
+            }
+        });
     } catch (e) {
         res.send(e.message)
     }
@@ -121,27 +127,29 @@ router.put('/jadwal/:id',function (req,res) {
 router.delete('/jadwal/:id', function (req,res) {
     let ret;
     try{
-        if (verifyToken(req)) {
-            const id = req.params.id;
-            pool.query("DELETE FROM jadwal WHERE id=$1", [id], err => {
-                if (err) {
-                    throw err
-                } else {
-                    ret = {
-                        'status': 200,
-                        'results': 'Data Deleted'
-                    };
-                    res.status(200).send(ret)
-                }
-            })
-        }
-        else{
-            ret = {
-                status: 401,
-                results: 'Maneh Sokap wak! Bukan admin maneh!'
-            };
-            res.status(401).json(ret)
-        }
+        verifyToken(req, function (hasil) {
+            if (hasil){
+                const id = req.params.id;
+                pool.query("DELETE FROM jadwal WHERE id=$1", [id], err => {
+                    if (err) {
+                        throw err
+                    } else {
+                        ret = {
+                            'status': 200,
+                            'results': 'Data Deleted'
+                        };
+                        res.status(200).send(ret)
+                    }
+                })
+            }
+            else{
+                ret = {
+                    status: 401,
+                    results: 'Maneh Sokap wak! Bukan admin maneh!'
+                };
+                res.status(401).json(ret)
+            }
+        });
     }
     catch (e) {
         ret={

@@ -56,49 +56,57 @@ router.get('/requirements', function (req,res) {
         }
     })
 });
-function verifyStudents(req){
-    const id = req.headers["id-pendaftar"];
-    const result = pool.query("SELECT * FROM peserta WHERE idpendaftar=$1", [id]);
-    if (result.length>0){
-        return true
-    }
-    else {
-        return false
-    }
+function verifyStudents(id,callback){
+    pool.query("SELECT COUNT(*) FROM peserta WHERE idpendaftar=$1", [id], (err, result)=>{
+        if (err){
+            callback(false);
+        }
+        else {
+            if (result.rows[0].count>0){
+                callback(true);
+            }
+            else {
+                callback(true);
+            }
+        }
+    });
 }
 router.post('/requirements', function (req,res) {
     let ret;
     try{
-        if (verifyStudents(req)){
-            const date = new Date();
-            const file = '/uploads/students/' + req.headers["id-pendaftar"] + '.pdf';
-            upload.single('file');
-            pool.query("INSERT INTO uploadedfiles(idpendaftar,jalur,idfiles,filepath,uploadeddate,verified) VALUES ($1,$2,$3,$4,$5,$6)",[req.headers["id-pendaftar"], req.body.jalur,
-                req.body.idfiles,file,date,false], (err, result) => {
-                if (err){
-                    ret={
-                        status: err.code,
-                        results: err.message
-                    };
-                    res.json(ret)
-                }
-                else{
-                    ret={
-                        status: 200,
-                        description:'Data Uploaded',
-                        results: result.rows
-                    };
-                    res.status(200).json(ret);
-                }
-            })
-        }
-        else {
-            ret ={
-                status: 401,
-                results: 'Anda belum terdaftar sebagai calon mahasiswa!'
-            };
-            res.status(401).json(ret);
-        }
+        const id = req.query.nim;
+        verifyStudents(id, function (hasil) {
+            if (hasil){
+                const date = new Date();
+                const file = '/uploads/students/' + req.headers["id-pendaftar"] + '.pdf';
+                upload.single('file');
+                pool.query("INSERT INTO uploadedfiles(idpendaftar,jalur,idfiles,filepath,uploadeddate,verified) VALUES ($1,$2,$3,$4,$5,$6)",[id, req.body.jalur,
+                    req.body.idfiles,file,date,false], (err, result) => {
+                    if (err){
+                        ret={
+                            status: 200,
+                            results: err.message
+                        };
+                        res.json(ret)
+                    }
+                    else{
+                        ret={
+                            status: 200,
+                            description:'Data Uploaded',
+                            results: result.rows
+                        };
+                        res.status(200).json(ret);
+                    }
+                })
+            }
+            else {
+                ret ={
+                    status: 401,
+                    results: 'Anda belum terdaftar sebagai calon mahasiswa!'
+                };
+                res.status(401).json(ret);
+            }
+        })
     }
     catch (e) {
         ret={
@@ -110,45 +118,38 @@ router.post('/requirements', function (req,res) {
 });
 router.get('/files',function (req, res) {
     let ret;
+    const id = req.query.nim;
     try{
-        if (verifyStudents(req)) {
-            const id = req.params.id;
-            pool.query("SELECT * FROM uploadedfiles WHERE idpendaftar=$1", [id], (err, result) => {
-                if (err) {
-                    ret={
-                        status: err.code,
-                        results: err.message
-                    };
-                    res.json(ret)
-                } else {
-                    if (result.rows['id']) {
-                        data = {
-                            id: result.rows['id'],
-                            name: result.rows['name'],
-                            files: result.rows
-                        };
+        verifyStudents(id, function (hasil) {
+            if (hasil) {
+                pool.query("SELECT * FROM uploadedfiles WHERE idpendaftar=$1", [id], (err, result) => {
+                    if (err) {
                         ret = {
-                            status: 200,
-                            results: data
+                            status: err.code,
+                            results: err.message
                         };
-                        res.status(200).json(ret)
+                        res.json(ret)
                     } else {
-                        ret = {
-                            status: 200,
-                            results: 'ID not Found'
-                        };
-                        res.status(200).json(ret)
+                        if (result.rows.length>0) {
+                            ret = {
+                                status: 200,
+                                results: result.rows
+                            };
+                            res.status(200).json(ret)
+                        } else {
+                            ret = {
+                                status: 200,
+                                results: 'Anda Belum mengupload file apapun'
+                            };
+                            res.status(200).json(ret)
+                        }
                     }
-                }
-            })
-        }
-        else {
-            ret ={
-                status: 401,
-                results: 'Anda belum terdaftar sebagai calon mahasiswa!'
-            };
-            res.status(401).json(ret);
-        }
+                })
+            }
+            else {
+                res.send("GAGAL")
+            }
+        })
     }
     catch (e) {
         ret={
