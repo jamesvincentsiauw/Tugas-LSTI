@@ -17,8 +17,13 @@ router.post('/register', function (req, res) {
     try{
         const id = req.body.id;
         const namapendaftar = req.body.nama;
+        const alamat = req.body.alamat;
+        const fakultas = req.body.fakultas;
+        const ttl = req.body.ttl;
+        const tingkat = req.body.tingkat;
+        const jalur = req.body.jalur;
         const date = new Date();
-        pool.query("INSERT INTO peserta(idpendaftar,namapendaftar,tanggaldaftar) VALUES ($1,$2,$3)",[id,namapendaftar,date],(err, result) => {
+        pool.query("INSERT INTO peserta(idpendaftar,namapendaftar,tanggaldaftar,alamat,fakultas,tempattanggallahir,tingkat,jalur) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)",[id,namapendaftar,date,alamat,fakultas,ttl,tingkat,jalur],(err, result) => {
             if (err){
                 ret={
                         status: err.code,
