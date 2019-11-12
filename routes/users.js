@@ -1,12 +1,13 @@
 var express = require('express');
 var router = express.Router();
 const Pool = require('pg').Pool;
+require('dotenv').config();
 const pool = new Pool({
-    user: 'lasti',
-    host: '178.128.104.74',
-    database: 'pengelolaanjalurseleksipmb',
-    password: '2a099e69',
-    port: 40010
+    user: process.env.DB_USER,
+    host: process.env.DB_HOST,
+    database: process.env.DB_NAME,
+    password: process.env.DB_PASS,
+    port: process.env.DB_PORT
 });
 
 router.get('/', function(req, res, next) {

@@ -9,26 +9,31 @@ var storage = multer.diskStorage({
 });
 const upload = multer({storage: storage});
 const Pool = require('pg').Pool;
+require('dotenv').config();
 const pool = new Pool({
-    user: 'lasti',
-    host: '178.128.104.74',
-    database: 'pengelolaanjalurseleksipmb',
-    password: '2a099e69',
-    port: 40010
+    user: process.env.DB_USER,
+    host: process.env.DB_HOST,
+    database: process.env.DB_NAME,
+    password: process.env.DB_PASS,
+    port: process.env.DB_PORT
 });
 
 router.get('/jadwal', function (req,res) {
     let ret;
-    pool.query("SELECT * FROM jadwal",(err,result)=>{
+    pool.query("SELECT * FROM jadwal", (err,result)=>{
         if (err){
-            throw err
+            ret={
+                status: err.code,
+                results: err.message
+            };
+            res.send(ret)
         }
         else{
             ret ={
                 'jalur': 'Seleksi Mandiri',
                 'results': result.rows
             };
-            res.status(200).json(ret)
+            res.status(200).send(ret)
         }
     })
 });
@@ -36,7 +41,11 @@ router.get('/requirements', function (req,res) {
     let ret;
     pool.query("SELECT * FROM requirements", (err,result)=>{
         if (err){
-            throw err
+            ret={
+                status: err.code,
+                results: err.message
+            };
+            res.json(ret)
         }
         else{
             ret={

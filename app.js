@@ -15,15 +15,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', function (res) {
-    let ret = {
-        status: 200,
-        message: 'Maaf, resources yang Anda cari tidak ada disini'
-    };
-    res.statusCode=200;
-    res.message=ret;
-    res.send(ret)
-});
+
 app.use('/users', usersRouter);
 app.use('/admin', adminRouter);
 app.use('/student',studentRouter);
