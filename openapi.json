@@ -23,37 +23,40 @@
     "description" : "Khusus admin sistem"
   }, {
     "name" : "students",
-    "description" : "Khusus pendaftar/masyarakat"
+    "description" : "Khusus pendaftar"
+  }, {
+    "name" : "auth",
+    "description" : "Untuk autentikasi user"
   } ],
   "paths" : {
-    "/requirements" : {
+    "/student/requirements" : {
       "get" : {
         "tags" : [ "students" ],
         "summary" : "get required file",
-        "operationId" : "getRequirements",
-        "description" : "Endpoint ini akan memberikan informasi mengenai berkas-berkas yang harus disiapkan untuk melakukan pendaftaran sebagai mahasiswa baru melalui jalur seleksi mandiri",
         "responses" : {
           "200" : {
-            "description" : "search results matching criteria",
+            "description" : "menampilkan berkas yang dibutuhkan",
             "content" : {
               "application/json" : {
                 "schema" : {
                   "type" : "object",
                   "properties" : {
-                    "jalur" : {
-                      "type" : "string",
-                      "format" : "jalur",
-                      "example" : "Seleksi Mandiri"
+                    "status" : {
+                      "type" : "integer",
+                      "format" : "status",
+                      "example" : 200
                     },
-                    "files" : {
+                    "results" : {
                       "type" : "array",
                       "items" : {
                         "$ref" : "#/components/schemas/RequiredFiles"
                       },
                       "example" : [ {
+                        "jalur" : "Seleksi Mandiri",
                         "id" : "SM5627",
                         "files" : "Ijazah SMA"
                       }, {
+                        "jalur" : "Seleksi Mandiri",
                         "id" : "SM3671",
                         "files" : "Fotokopi KTP"
                       } ]
@@ -70,11 +73,77 @@
             "description" : "internal server error"
           }
         }
+      },
+      "post" : {
+        "tags" : [ "students" ],
+        "summary" : "upload required files",
+        "requestBody" : {
+          "content" : {
+            "application/x-www-form-urlencoded" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/Files"
+              }
+            }
+          }
+        },
+        "parameters" : [ {
+          "in" : "query",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Data berhasil diupload",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : {
+                    "status" : {
+                      "type" : "integer",
+                      "format" : "status",
+                      "example" : 200
+                    },
+                    "description" : {
+                      "type" : "string",
+                      "format" : "desc",
+                      "example" : "Data Uploaded"
+                    },
+                    "results" : {
+                      "type" : "array",
+                      "items" : {
+                        "$ref" : "#/components/schemas/Files"
+                      },
+                      "example" : [ {
+                        "idpendaftar" : "RIWV2J8PFPKJTG1AX3QREY5513C5Z9",
+                        "jalur" : "Seleksi Mandiri",
+                        "idfiles" : "SMJ02",
+                        "filepath" : "/uploads/requirements/02.pdf",
+                        "uploadeddate" : "23-12-2019",
+                        "verified" : false
+                      } ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "bad request"
+          },
+          "500" : {
+            "description" : "internal server error"
+          }
+        }
       }
     },
-    "/jadwal/{id}" : {
+    "/admin/jadwal/{id}" : {
       "put" : {
         "tags" : [ "admins" ],
+        "summary" : "update jadwal tahapan seleksi",
         "parameters" : [ {
           "in" : "path",
           "name" : "id",
@@ -93,16 +162,17 @@
           }
         },
         "responses" : {
-          "200" : {
-            "description" : "Data updated"
-          },
           "400" : {
             "description" : "bad input parameter"
+          },
+          "500" : {
+            "description" : "internal server error"
           }
         }
       },
       "delete" : {
         "tags" : [ "admins" ],
+        "summary" : "menghapus jadwal tahapan seleksi",
         "parameters" : [ {
           "in" : "path",
           "name" : "id",
@@ -117,51 +187,17 @@
           },
           "400" : {
             "description" : "bad input parameter"
+          },
+          "500" : {
+            "description" : "internal server error"
           }
         }
       }
     },
-    "/jadwal" : {
-      "get" : {
-        "tags" : [ "students" ],
-        "responses" : {
-          "200" : {
-            "description" : "Success",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "type" : "object",
-                  "properties" : {
-                    "jalur" : {
-                      "type" : "string",
-                      "format" : "jalur",
-                      "example" : "Seleksi Mandiri"
-                    },
-                    "files" : {
-                      "type" : "array",
-                      "items" : {
-                        "$ref" : "#/components/schemas/TahapanSeleksi"
-                      },
-                      "example" : [ {
-                        "tanggal" : "15 Okktober 2019",
-                        "kegiatan" : "Batas akhir pendaftaran peserta seleksi"
-                      }, {
-                        "tanggal" : "2 Desember 2019",
-                        "kegiatan" : "Pengumuman peserta lolos seleksi"
-                      } ]
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400" : {
-            "description" : "bad input parameter"
-          }
-        }
-      },
+    "/admin/jadwal" : {
       "post" : {
         "tags" : [ "admins" ],
+        "summary" : "menambahkan jadwal tahapan seleksi",
         "requestBody" : {
           "content" : {
             "application/x-www-form-urlencoded" : {
@@ -177,9 +213,35 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "$ref" : "#/components/schemas/TahapanSeleksi"
+                  "type" : "object",
+                  "properties" : {
+                    "status" : {
+                      "type" : "integer",
+                      "format" : "status",
+                      "example" : 200
+                    },
+                    "description" : {
+                      "type" : "string",
+                      "format" : "desc",
+                      "example" : "Data Inserted"
+                    },
+                    "results" : {
+                      "type" : "array",
+                      "items" : {
+                        "$ref" : "#/components/schemas/TahapanSeleksi"
+                      },
+                      "example" : [ {
+                        "id" : "69FZFFCBLAL551TU4ZE5",
+                        "tanggalMulai" : "15 Okktober 2019",
+                        "tanggalAkhir" : "1 Desember 2019",
+                        "kegiatan" : "Batas akhir pendaftaran peserta seleksi"
+                      }, {
+                        "id" : "OVYL7KF5934JZY0NPOMF",
+                        "tanggalMulai" : "2 Desember 2019",
+                        "tanggalAkhir" : "5 Desember 2019",
+                        "kegiatan" : "Pengumuman peserta lolos seleksi"
+                      } ]
+                    }
                   }
                 }
               }
@@ -194,11 +256,65 @@
         }
       }
     },
-    "/user/files/{id}" : {
+    "/student/jadwal" : {
       "get" : {
-        "tags" : [ "students", "admins" ],
+        "tags" : [ "students" ],
+        "summary" : "melihat jadwal tahapan seleksi",
+        "responses" : {
+          "200" : {
+            "description" : "Success",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : {
+                    "status" : {
+                      "type" : "integer",
+                      "format" : "status",
+                      "example" : 200
+                    },
+                    "jalurn" : {
+                      "type" : "string",
+                      "format" : "jalur",
+                      "example" : "Seleksi Mandiri"
+                    },
+                    "results" : {
+                      "type" : "array",
+                      "items" : {
+                        "$ref" : "#/components/schemas/TahapanSeleksi"
+                      },
+                      "example" : [ {
+                        "id" : "69FZFFCBLAL551TU4ZE5",
+                        "tanggalMulai" : "15 Okktober 2019",
+                        "tanggalAkhir" : "1 Desember 2019",
+                        "kegiatan" : "Batas akhir pendaftaran peserta seleksi"
+                      }, {
+                        "id" : "OVYL7KF5934JZY0NPOMF",
+                        "tanggalMulai" : "2 Desember 2019",
+                        "tanggalAkhir" : "5 Desember 2019",
+                        "kegiatan" : "Pengumuman peserta lolos seleksi"
+                      } ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "bad input parameter"
+          },
+          "500" : {
+            "description" : "internal server error"
+          }
+        }
+      }
+    },
+    "/student/files" : {
+      "get" : {
+        "tags" : [ "students" ],
+        "summary" : "menampilkan daftar berkas yang sudah di upload oleh peserta",
         "parameters" : [ {
-          "in" : "path",
+          "in" : "query",
           "name" : "id",
           "required" : true,
           "schema" : {
@@ -207,30 +323,45 @@
         } ],
         "responses" : {
           "200" : {
-            "description" : "menampilkan daftar berkas yang belum di upload oleh peserta",
+            "description" : "berkas yang sudah diupload",
             "content" : {
               "application/json" : {
                 "schema" : {
                   "type" : "object",
                   "properties" : {
-                    "idPeserta" : {
-                      "type" : "string",
-                      "format" : "idPeserta",
-                      "example" : 182719991
+                    "status" : {
+                      "type" : "integer",
+                      "format" : "status",
+                      "example" : 200
                     },
-                    "uploadedFiles" : {
+                    "identity" : {
+                      "type" : "object",
+                      "properties" : {
+                        "idpendaftar" : {
+                          "type" : "string",
+                          "format" : "id",
+                          "example" : "RIWV2J8PFPKJTG1AX3QREY5513C5Z9"
+                        },
+                        "jalur" : {
+                          "type" : "string",
+                          "format" : "jalur",
+                          "example" : "Seleksi Mandiri"
+                        }
+                      }
+                    },
+                    "results" : {
                       "type" : "array",
                       "items" : {
                         "$ref" : "#/components/schemas/Files"
                       },
                       "example" : [ {
-                        "id" : "SM5627",
-                        "files" : "Ijazah SMA",
+                        "idfiles" : "SM5627",
+                        "filepath" : "uploads/requirements/02.pdf",
                         "uploadedAt" : "7 Oktober 2019",
                         "verified" : true
                       }, {
-                        "id" : "SM3671",
-                        "files" : "Fotokopi KTP",
+                        "idfiles" : "SM3671",
+                        "filepath" : "uploads/requirements/03.pdf",
                         "uploadedAt" : "11 Oktober 2019",
                         "verified" : false
                       } ]
@@ -239,39 +370,160 @@
                 }
               }
             }
+          },
+          "400" : {
+            "description" : "bad input parameter"
+          },
+          "500" : {
+            "description" : "internal server error"
           }
         }
       }
     },
-    "/requirements/{id}" : {
+    "/auth/register" : {
       "post" : {
-        "description" : "upload file berdasarkan id pendaftar",
-        "summary" : "upload file berdasarkan id pendaftar",
-        "tags" : [ "students" ],
-        "parameters" : [ {
-          "in" : "path",
-          "name" : "id",
-          "description" : "idSeleksiPendaftar",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
+        "tags" : [ "auth" ],
+        "summary" : "register new user",
         "requestBody" : {
           "content" : {
             "application/x-www-form-urlencoded" : {
               "schema" : {
-                "$ref" : "#/components/schemas/Files"
+                "$ref" : "#/components/schemas/User"
               }
             }
           }
         },
         "responses" : {
           "200" : {
-            "description" : "data uploaded"
+            "description" : "user registered",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : {
+                    "status" : {
+                      "type" : "integer",
+                      "format" : "status",
+                      "example" : 200
+                    },
+                    "description" : {
+                      "type" : "string",
+                      "format" : "desc",
+                      "example" : "User Registered"
+                    },
+                    "results" : {
+                      "type" : "array",
+                      "items" : {
+                        "$ref" : "#/components/schemas/User"
+                      }
+                    }
+                  }
+                }
+              }
+            }
           },
           "400" : {
-            "description" : "bad parameter request"
+            "description" : "bad input parameter"
+          },
+          "500" : {
+            "description" : "internal server error"
+          }
+        }
+      }
+    },
+    "/auth/login" : {
+      "post" : {
+        "tags" : [ "auth" ],
+        "summary" : "login system",
+        "requestBody" : {
+          "content" : {
+            "application/x-www-form-urlencoded" : {
+              "schema" : {
+                "type" : "object",
+                "required" : [ "username", "password" ],
+                "properties" : {
+                  "username" : {
+                    "type" : "string",
+                    "format" : "username",
+                    "example" : "jamesvincentsiauw"
+                  },
+                  "password" : {
+                    "type" : "string",
+                    "format" : "password",
+                    "example" : "*******"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "Login Sukses",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : {
+                    "status" : {
+                      "type" : "integer",
+                      "format" : "status",
+                      "example" : 200
+                    },
+                    "sessionID" : {
+                      "type" : "string",
+                      "format" : "sessionID",
+                      "example" : "9121882919SS810"
+                    },
+                    "results" : {
+                      "type" : "string",
+                      "example" : "Berhasil Login Vincent"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "bad input parameter"
+          },
+          "500" : {
+            "description" : "internal server error"
+          }
+        }
+      }
+    },
+    "/auth/logout" : {
+      "post" : {
+        "tags" : [ "auth" ],
+        "description" : "logout system",
+        "responses" : {
+          "200" : {
+            "description" : "Logout Sukses",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : {
+                    "status" : {
+                      "type" : "integer",
+                      "format" : "status",
+                      "example" : 200
+                    },
+                    "results" : {
+                      "type" : "string",
+                      "example" : "Berhasil Logout"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "bad input parameter"
+          },
+          "500" : {
+            "description" : "internal server error"
           }
         }
       }
@@ -279,9 +531,64 @@
   },
   "components" : {
     "schemas" : {
+      "User" : {
+        "type" : "object",
+        "required" : [ "nama", "fakultas", "alamat", "ttl", "tingkat", "jalur", "username", "password", "email" ],
+        "properties" : {
+          "nama" : {
+            "type" : "string",
+            "format" : "name",
+            "example" : "Vincent"
+          },
+          "alamat" : {
+            "type" : "string",
+            "format" : "address",
+            "example" : "Jalan Bandung no 780"
+          },
+          "fakultas" : {
+            "type" : "string",
+            "format" : "faculty",
+            "example" : "STEI"
+          },
+          "ttl" : {
+            "type" : "string",
+            "format" : "ttl",
+            "example" : "7 Januari 1998"
+          },
+          "tingkat" : {
+            "type" : "string",
+            "format" : "tingkat",
+            "example" : "S1"
+          },
+          "jalur" : {
+            "type" : "string",
+            "format" : "jalur",
+            "example" : "Seleksi Mandiri"
+          },
+          "username" : {
+            "type" : "string",
+            "format" : "username",
+            "example" : "jamesvincentsiauw"
+          },
+          "email" : {
+            "type" : "string",
+            "format" : "email",
+            "example" : "alamak@ahaydeu.com"
+          },
+          "password" : {
+            "type" : "string",
+            "format" : "password",
+            "example" : "********"
+          }
+        }
+      },
       "RequiredFiles" : {
         "type" : "object",
         "properties" : {
+          "jalur" : {
+            "type" : "string",
+            "format" : "jalur"
+          },
           "id" : {
             "type" : "string",
             "format" : "id"
@@ -294,11 +601,15 @@
       },
       "TahapanSeleksi" : {
         "type" : "object",
-        "required" : [ "tanggal", "kegiatan" ],
+        "required" : [ "tanggalMulai", "tanggalAkhir", "kegiatan" ],
         "properties" : {
-          "tanggal" : {
+          "tanggalMulai" : {
             "type" : "string",
-            "format" : "date"
+            "format" : "startDate"
+          },
+          "tanggalAkhir" : {
+            "type" : "string",
+            "format" : "endDate"
           },
           "kegiatan" : {
             "type" : "string",
@@ -308,22 +619,27 @@
       },
       "Files" : {
         "type" : "object",
+        "required" : [ "idpendaftar", "jalur", "idfiles", "file", "uploadeddate" ],
         "properties" : {
-          "idFiles" : {
+          "idpendaftar" : {
             "type" : "string",
             "format" : "id"
           },
-          "files" : {
+          "jalur" : {
             "type" : "string",
+            "format" : "jalur"
+          },
+          "idfiles" : {
+            "type" : "string",
+            "format" : "id"
+          },
+          "file" : {
+            "type" : "object",
             "format" : "file"
           },
-          "uploadedAt" : {
+          "uploadeddate" : {
             "type" : "string",
-            "format" : "uploadedAt",
-            "description" : "tanggal upload file"
-          },
-          "verified" : {
-            "type" : "boolean"
+            "format" : "uploadedAt"
           }
         }
       }

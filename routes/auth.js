@@ -50,35 +50,6 @@ router.post('/login', function(req, res) {
         })
     }
 });
-router.get('/tes', function (req,res) {
-    // let ret;
-    // pool.query("SELECT * FROM peserta", (err,result)=>{
-    //     if (err){
-    //         ret={
-    //             status: err.code,
-    //             results: err.message
-    //         };
-    //         res.send(ret)
-    //     }
-    //     else{
-    //         res.status(200).send(result.rows);
-    //     }
-    // })
-    const id = req.query.nim;
-    pool.query("SELECT COUNT(*) FROM peserta WHERE idpendaftar=$1", [id], (err, result)=>{
-        if (err){
-            res.send(false)
-        }
-        else {
-            if (result.rows[0].count>0){
-                res.send(true)
-            }
-            else {
-                res.send(false)
-            }
-        }
-    });
-});
 router.post('/logout',function (req,res) {
     if (req.session.loggedIn){
         req.session.loggedIn = false;

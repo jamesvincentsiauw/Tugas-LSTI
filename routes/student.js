@@ -30,6 +30,7 @@ router.get('/jadwal', function (req,res) {
         }
         else{
             ret ={
+                status: 200,
                 'jalur': 'Seleksi Mandiri',
                 'results': result.rows
             };
@@ -50,7 +51,7 @@ router.get('/requirements', function (req,res) {
         else{
             ret={
                 status: 200,
-                message: result.rows
+                results: result.rows
             };
             res.status(200).json(ret)
         }
@@ -71,14 +72,15 @@ function verifyStudents(id,callback){
         }
     });
 }
+
 router.post('/requirements', function (req,res) {
     let ret;
     try{
-        const id = req.query.nim;
+        const id = req.query.id;
         verifyStudents(id, function (hasil) {
             if (hasil){
                 const date = new Date();
-                const file = '/uploads/students/' + req.headers["id-pendaftar"] + '.pdf';
+                const file = '/uploads/students/' + id + '.pdf';
                 upload.single('file');
                 pool.query("INSERT INTO uploadedfiles(idpendaftar,jalur,idfiles,filepath,uploadeddate,verified) VALUES ($1,$2,$3,$4,$5,$6)",[id, req.body.jalur,
                     req.body.idfiles,file,date,false], (err, result) => {
@@ -118,11 +120,11 @@ router.post('/requirements', function (req,res) {
 });
 router.get('/files',function (req, res) {
     let ret;
-    const id = req.query.nim;
+    const id = req.query.id;
     try{
         verifyStudents(id, function (hasil) {
             if (hasil) {
-                pool.query("SELECT * FROM uploadedfiles WHERE idpendaftar=$1", [id], (err, result) => {
+                pool.query("SELECT idfiles,filepath,uploadeddate,verified FROM uploadedfiles WHERE idpendaftar=$1", [id], (err, result) => {
                     if (err) {
                         ret = {
                             status: err.code,
@@ -133,6 +135,10 @@ router.get('/files',function (req, res) {
                         if (result.rows.length>0) {
                             ret = {
                                 status: 200,
+                                identity:{
+                                    idpendaftar: id,
+                                    jalur: "Seleksi Mandiri"
+                                },
                                 results: result.rows
                             };
                             res.status(200).json(ret)
