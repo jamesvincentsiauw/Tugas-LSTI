@@ -29,34 +29,23 @@ router.get('/', function (req,res) {
     res.send(ret)
 });
 router.get('/pendaftar', function (req,res) {
-   try {
-       verifyToken(req, function (hasil) {
-           if (hasil){
-               pool.query("SELECT idpendaftar,username,namapendaftar,tanggaldaftar,alamat,fakultas,tempattanggallahir,tingkat,jalur FROM peserta",(err,result)=>{
-                   if (err){
-                       ret={
-                           status: err.code,
-                           results: err.message
-                       };
-                       res.json(ret)
-                   }
-                   else{
-                       ret={
-                           status: 200,
-                           results: result.rows
-                       };
-                       res.status(200).json(ret);
-                   }
-               })
-           }
-       })
-   } catch (e) {
-       ret={
-           status: e.statusCode,
-           description:e.message,
-       };
-       res.json(ret);
-   }
+    let ret;
+    pool.query("SELECT * FROM peserta WHERE jalur=$1",[req.query.jalur], (err,result)=>{
+        if (err){
+            ret={
+                status: err.code,
+                results: err.message
+            };
+            res.send(ret)
+        }
+        else{
+            ret ={
+                'jalur': req.query.jalur,
+                'results': result.rows
+            };
+            res.status(200).send(ret)
+        }
+    })
 });
 router.post('/jadwal',function (req, res) {
     let ret;
