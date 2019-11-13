@@ -28,6 +28,36 @@ router.get('/', function (req,res) {
     res.message=ret;
     res.send(ret)
 });
+router.get('/pendaftar', function (req,res) {
+   try {
+       verifyToken(req, function (hasil) {
+           if (hasil){
+               pool.query("SELECT idpendaftar,username,namapendaftar,tanggaldaftar,alamat,fakultas,tempattanggallahir,tingkat,jalur FROM peserta",(err,result)=>{
+                   if (err){
+                       ret={
+                           status: err.code,
+                           results: err.message
+                       };
+                       res.json(ret)
+                   }
+                   else{
+                       ret={
+                           status: 200,
+                           results: result.rows
+                       };
+                       res.status(200).json(ret);
+                   }
+               })
+           }
+       })
+   } catch (e) {
+       ret={
+           status: e.statusCode,
+           description:e.message,
+       };
+       res.json(ret);
+   }
+});
 router.post('/jadwal',function (req, res) {
     let ret;
     try {
@@ -40,7 +70,11 @@ router.post('/jadwal',function (req, res) {
                 if (tanggalMulai && tanggalAkhir && kegiatan) {
                     pool.query("INSERT INTO jadwal(id,tanggalmulai,tanggalselesai,kegiatan) VALUES ($1,$2,$3,$4)", [id, tanggalMulai, tanggalAkhir, kegiatan], err => {
                         if (err) {
-                            throw err
+                            ret={
+                                status: err.code,
+                                results: err.message
+                            };
+                            res.json(ret)
                         } else {
                             ret = {
                                 status: 200,
@@ -71,10 +105,13 @@ router.post('/jadwal',function (req, res) {
                  res.status(401).json(ret)
             }
         });
-    }
-    catch (e) {
-        res.send(e.message)
-    }
+    } catch (e) {
+       ret={
+           status: e.statusCode,
+           description:e.message,
+       };
+       res.json(ret);
+   }
 });
 router.put('/jadwal/:id',function (req,res) {
     let ret;
@@ -88,7 +125,11 @@ router.put('/jadwal/:id',function (req,res) {
                 if (tanggalMulai && tanggalAkhir && kegiatan) {
                     pool.query("UPDATE jadwal SET tanggalmulai=$1,tanggalselesai=$2,kegiatan=$3 WHERE id=$4", [tanggalMulai, tanggalAkhir, kegiatan, id], err => {
                         if (err) {
-                            throw err
+                            ret={
+                                status: err.code,
+                                results: err.message
+                            };
+                            res.json(ret)
                         } else {
                             ret = {
                                 status: 200,
@@ -121,8 +162,12 @@ router.put('/jadwal/:id',function (req,res) {
             }
         });
     } catch (e) {
-        res.send(e.message)
-    }
+       ret={
+           status: e.statusCode,
+           description:e.message,
+       };
+       res.json(ret);
+   }
 });
 router.delete('/jadwal/:id', function (req,res) {
     let ret;
@@ -132,7 +177,11 @@ router.delete('/jadwal/:id', function (req,res) {
                 const id = req.params.id;
                 pool.query("DELETE FROM jadwal WHERE id=$1", [id], err => {
                     if (err) {
-                        throw err
+                        ret={
+                            status: err.code,
+                            results: err.message
+                        };
+                        res.json(ret)
                     } else {
                         ret = {
                             'status': 200,
