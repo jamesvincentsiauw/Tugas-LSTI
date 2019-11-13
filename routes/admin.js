@@ -39,10 +39,18 @@ router.get('/pendaftar', function (req,res) {
             res.send(ret)
         }
         else{
-            ret ={
-                'jalur': req.query.jalur,
-                'results': result.rows
-            };
+            if (req.query.jalur!=null){
+                ret ={
+                    'jalur': req.query.jalur,
+                    'results': result.rows
+                };
+            }
+            else {
+                ret ={
+                    'jalur': null,
+                    'results': result.rows
+                };
+            }
             res.status(200).send(ret)
         }
     })
