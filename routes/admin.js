@@ -28,44 +28,6 @@ router.get('/', function (req,res) {
     res.message=ret;
     res.send(ret)
 });
-router.get('/pendaftar', function (req,res) {
-    let ret;
-    verifyToken(req,function (hasil) {
-        if (hasil){
-            pool.query("SELECT idpendaftar,namapendaftar,tanggaldaftar,alamat,fakultas,tempattanggallahir,tingkat FROM peserta WHERE jalur=$1",[req.query.jalur], (err,result)=>{
-                if (err){
-                    ret={
-                        status: err.code,
-                        results: err.message
-                    };
-                    res.send(ret)
-                }
-                else{
-                    if (req.query.jalur!=null){
-                        ret ={
-                            'jalur': req.query.jalur,
-                            'results': result.rows
-                        };
-                    }
-                    else {
-                        ret ={
-                            'jalur': null,
-                            'results': result.rows
-                        };
-                    }
-                    res.status(200).send(ret)
-                }
-            })
-        }
-        else{
-            ret = {
-                status: 401,
-                results: 'Maneh Sokap wak! Bukan admin maneh!'
-            };
-            res.status(401).json(ret)
-        }
-    });
-});
 router.post('/jadwal',function (req, res) {
     let ret;
     try {

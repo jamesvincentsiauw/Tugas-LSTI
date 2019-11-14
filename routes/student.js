@@ -17,7 +17,6 @@ const pool = new Pool({
     password: process.env.DB_PASS,
     port: process.env.DB_PORT
 });
-
 router.get('/jadwal', function (req,res) {
     let ret;
     pool.query("SELECT * FROM jadwal", (err,result)=>{
@@ -72,7 +71,6 @@ function verifyStudents(id,callback){
         }
     });
 }
-
 router.post('/requirements', function (req,res) {
     let ret;
     try{
@@ -154,6 +152,64 @@ router.get('/files',function (req, res) {
             }
             else {
                 res.send("GAGAL")
+            }
+        })
+    }
+    catch (e) {
+        ret={
+            status: e.statusCode,
+            description:e.message,
+        };
+        res.json(ret);
+    }
+});
+router.get('/', function (req, res) {
+    let ret;
+    try{
+         pool.query("SELECT idpendaftar,namapendaftar,tanggaldaftar,alamat,fakultas,tempattanggallahir,tingkat,jalur FROM peserta", (err,result)=>{
+            if (err){
+                ret={
+                    status: err.code,
+                    results: err.message
+                };
+                res.send(ret)
+            }
+            else{
+                ret = {
+                    status: 200,
+                    description: 'menampilkan seluruh pendaftar',
+                    results: result.rows
+                };
+                res.status(200).json(ret)
+            }
+        })
+    }
+    catch (e) {
+        ret={
+            status: e.statusCode,
+            description:e.message,
+        };
+        res.json(ret);
+    }
+});
+router.get('/:id', function (req, res) {
+    let ret;
+    try{
+         pool.query("SELECT idpendaftar,namapendaftar,tanggaldaftar,alamat,fakultas,tempattanggallahir,tingkat,jalur FROM peserta WHERE idpendaftar=$1",[req.params.id], (err,result)=>{
+            if (err){
+                ret={
+                    status: err.code,
+                    results: err.message
+                };
+                res.send(ret)
+            }
+            else{
+                ret = {
+                    status: 200,
+                    description: 'menampilkan pendaftar berdasarkan ID',
+                    results: result.rows
+                };
+                res.status(200).json(ret)
             }
         })
     }
