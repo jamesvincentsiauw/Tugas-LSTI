@@ -29,7 +29,8 @@ app.use(session({
     secret: 'secretBoy',
     resave: true,
     saveUninitialized: true,
-    cookie: {maxAge: 10000}
+    cookie: {maxAge: 10000},
+    loggedIn: false
 }));
 
 app.use('/auth', authRouter);
