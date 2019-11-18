@@ -13,7 +13,6 @@ const pool = new Pool({
     port: process.env.DB_PORT
 });
 
-
 router.post('/login', function(req, res) {
     let ret;
     const username = req.body.username;
@@ -70,34 +69,46 @@ router.post('/logout',function (req,res) {
 router.post('/register', function (req, res) {
     let ret;
     try{
-        const id = randomize('A0', 30);
-        const namapendaftar = req.body.nama;
-        const alamat = req.body.alamat;
-        const fakultas = req.body.fakultas;
-        const ttl = req.body.ttl;
-        const tingkat = req.body.tingkat;
-        const jalur = req.body.jalur;
-        const date = new Date();
-        const username = req.body.username;
-        const email = req.body.email;
-        const password = md5(req.body.password);
-        pool.query("INSERT INTO peserta(idpendaftar,namapendaftar,tanggaldaftar,alamat,fakultas,tempattanggallahir,tingkat,jalur,email,username,password) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)",[id,namapendaftar,date,alamat,fakultas,ttl,tingkat,jalur,email,username,password],(err, result) => {
-            if (err){
-                ret={
-                    status: err.code,
-                    results: err.message
-                };
-                res.json(ret)
+        pool.query("SELECT COUNT(*) FROM peserta WHERE 'username'='$1'",[req.body.username],(err,result)=>{
+            if (result.rows.count>0){
+                const id = randomize('A0', 30);
+                const namapendaftar = req.body.nama;
+                const alamat = req.body.alamat;
+                const fakultas = req.body.fakultas;
+                const ttl = req.body.ttl;
+                const tingkat = req.body.tingkat;
+                const jalur = req.body.jalur;
+                const date = new Date();
+                const username = req.body.username;
+                const email = req.body.email;
+                const password = md5(req.body.password);
+                pool.query("INSERT INTO peserta(idpendaftar,namapendaftar,tanggaldaftar,alamat,fakultas,tempattanggallahir,tingkat,jalur,email,username,password) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)",[id,namapendaftar,date,alamat,fakultas,ttl,tingkat,jalur,email,username,password],(err, result) => {
+                    if (err){
+                        ret={
+                            status: err.code,
+                            results: err.message
+                        };
+                        res.json(ret)
+                    }
+                    else {
+                        ret={
+                            status: 200,
+                            description:'User Registered',
+                            results: result.rows
+                        };
+                        res.status(200).json(ret);
+                    }
+                })
             }
-            else {
-                ret={
+            else{
+                ret = {
                     status: 200,
-                    description:'User Registered',
-                    results: result.rows
-                };
-                res.status(200).json(ret);
+                    description: 'Username Sudah Terdaftar',
+                    results: []
+                }
             }
-        })
+        });
+
     }
     catch (e) {
         ret={

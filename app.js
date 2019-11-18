@@ -2,6 +2,7 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+const session = require('express-session');
 
 var authRouter = require('./routes/auth');
 var adminRouter = require('./routes/admin');
@@ -15,7 +16,6 @@ var auth = function(req,res,next) {
 };
 var app = express();
 var cors = require('cors');
-const session = require('express-session');
 
 app.use(cors());
 app.use(logger('dev'));
@@ -23,6 +23,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
 
 app.use(session({
     secret: 'secretBoy',
