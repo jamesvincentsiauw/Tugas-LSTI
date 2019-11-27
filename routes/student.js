@@ -81,7 +81,7 @@ router.post('/requirements', function (req,res) {
                 const file = '/uploads/students/' + id + '.pdf';
                 upload.single('file');
                 pool.query("INSERT INTO uploadedfiles(idpendaftar,jalur,idfiles,filepath,uploadeddate,verified) VALUES ($1,$2,$3,$4,$5,$6)",[id, req.body.jalur,
-                    req.body.idfiles,file,date.slice(0,10),false], (err, result) => {
+                    req.body.idfiles,file,date,false], (err, result) => {
                     if (err){
                         ret={
                             status: 200,
