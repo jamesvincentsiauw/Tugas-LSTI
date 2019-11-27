@@ -1,11 +1,8 @@
 {
   "openapi" : "3.0.0",
-  "servers" : [ {
-    "description" : "SwaggerHub API Auto Mocking",
-    "url" : "https://virtserver.swaggerhub.com/jamesvincentsiauw/tubes_lasti/1.0.0"
-  }, {
+  "servers" : [{
     "url" : "http://178.128.104.74/pengelolaanjalurseleksipmb/"
-  } ],
+  }],
   "info" : {
     "description" : "API Penerimaan Mahasiswa Baru",
     "version" : "1.0.0",
@@ -150,14 +147,16 @@
           "required" : true,
           "schema" : {
             "type" : "string"
-          }
+          },
+          "example" : "QBCN4C2RARRRKJ3IMOCZ"
         }, {
           "in" : "query",
           "name" : "token",
           "required" : true,
           "schema" : {
             "type" : "string"
-          }
+          },
+          "example" : "8t7aBO1Q6Y0ZcC76A"
         } ],
         "requestBody" : {
           "content" : {
@@ -186,14 +185,16 @@
           "required" : true,
           "schema" : {
             "type" : "string"
-          }
+          },
+          "example" : "QBCN4C2RARRRKJ3IMOCZ"
         }, {
           "in" : "query",
           "name" : "token",
           "required" : true,
           "schema" : {
             "type" : "string"
-          }
+          },
+          "example" : "8t7aBO1Q6Y0ZcC76A"
         } ],
         "responses" : {
           "200" : {
@@ -218,7 +219,8 @@
           "required" : true,
           "schema" : {
             "type" : "string"
-          }
+          },
+          "example" : "8t7aBO1Q6Y0ZcC76A"
         } ],
         "requestBody" : {
           "content" : {
@@ -341,7 +343,8 @@
           "required" : true,
           "schema" : {
             "type" : "string"
-          }
+          },
+          "example" : "E5EYTZSRA975FOXRRLPGJWA8X9J3A"
         } ],
         "responses" : {
           "200" : {
@@ -467,12 +470,12 @@
                   "username" : {
                     "type" : "string",
                     "format" : "username",
-                    "example" : "jamesvincentsiauw"
+                    "example" : "jamesv"
                   },
                   "password" : {
                     "type" : "string",
                     "format" : "password",
-                    "example" : "*******"
+                    "example" : "password"
                   }
                 }
               }
