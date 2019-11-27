@@ -1,3 +1,4 @@
+var alert =  require('alert-node');
 var express = require('express');
 var router = express.Router();
 var randomize = require('randomatic');
@@ -98,14 +99,18 @@ router.post('/register', function (req, res) {
                                 status: err.code,
                                 results: err.message
                             };
-                            res.json(ret)
+                            console.log(ret);
+                            alert(err.message);
+                            res.redirect('back');
                         } else {
                             ret = {
                                 status: 200,
                                 description: 'User Registered',
                                 results: result.rows
                             };
-                            res.status(200).json(ret);
+                            console.log(ret);
+                            alert('User Registered');
+                            res.redirect('back');
                         }
                     })
                 } else {
@@ -114,7 +119,9 @@ router.post('/register', function (req, res) {
                         description: 'Username Sudah Terdaftar',
                         results: []
                     };
-                    res.status(200).json(ret);
+                    alert('Username sudah dipakai');
+                    console.log(ret);
+                    res.redirect('back');
                 }
             }
             else{
@@ -122,7 +129,8 @@ router.post('/register', function (req, res) {
                     status: err.code,
                     description: err.message
                 };
-                res.status(err.code).json(ret);
+                console.log(ret);
+                res.redirect('back');
             }
         })
     }
@@ -131,7 +139,8 @@ router.post('/register', function (req, res) {
             status: e.statusCode,
             description:e.message,
         };
-        res.json(ret);
+        console.log(ret);
+        res.redirect('back');
     }
 });
 
