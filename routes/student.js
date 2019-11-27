@@ -166,7 +166,7 @@ router.get('/files',function (req, res) {
 router.get('/', function (req, res) {
     let ret;
     try{
-         pool.query("SELECT idpendaftar,namapendaftar,tanggaldaftar,alamat,fakultas,tempattanggallahir,tingkat,jalur FROM peserta", (err,result)=>{
+         pool.query("SELECT username,idpendaftar,namapendaftar,tanggaldaftar,alamat,fakultas,tempattanggallahir,tingkat,jalur FROM peserta", (err,result)=>{
             if (err){
                 ret={
                     status: err.code,
@@ -195,7 +195,7 @@ router.get('/', function (req, res) {
 router.get('/:id', function (req, res) {
     let ret;
     try{
-         pool.query("SELECT idpendaftar,namapendaftar,tanggaldaftar,alamat,fakultas,tempattanggallahir,tingkat,jalur FROM peserta WHERE idpendaftar=$1",[req.params.id], (err,result)=>{
+         pool.query("SELECT username,idpendaftar,namapendaftar,tanggaldaftar,alamat,fakultas,tempattanggallahir,tingkat,jalur FROM peserta WHERE idpendaftar=$1",[req.params.id], (err,result)=>{
             if (err){
                 ret={
                     status: err.code,
