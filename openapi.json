@@ -655,10 +655,6 @@
             "type" : "string",
             "format" : "id"
           },
-          "file" : {
-            "type" : "object",
-            "format" : "file"
-          },
           "uploadeddate" : {
             "type" : "string",
             "format" : "uploadedAt"
