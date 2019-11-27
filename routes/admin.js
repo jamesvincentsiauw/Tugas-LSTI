@@ -92,36 +92,27 @@ router.put('/jadwal/:id',function (req,res) {
                 const tanggalMulai = req.body.tanggalMulai;
                 const tanggalAkhir = req.body.tanggalAkhir;
                 const kegiatan = req.body.kegiatan;
-                if (tanggalMulai && tanggalAkhir && kegiatan) {
-                    pool.query("UPDATE jadwal SET tanggalmulai=$1,tanggalselesai=$2,kegiatan=$3 WHERE id=$4", [tanggalMulai, tanggalAkhir, kegiatan, id], err => {
-                        if (err) {
-                            ret={
-                                status: err.code,
-                                results: err.message
-                            };
-                            res.json(ret)
-                        } else {
-                            ret = {
-                                status: 200,
-                                description: 'Data Updated',
-                                results: {
-                                    id: id,
-                                    tanggalMulai: tanggalMulai,
-                                    tanggalAkhir: tanggalAkhir,
-                                    kegiatan: kegiatan,
-                                }
-                            };
-                            res.status(200).json(ret)
-                        }
-                    })
-                }
-                else{
-                    ret = {
-                        status: 400,
-                        results: 'Parameter Kurang'
-                    };
-                    res.status(400).json(ret);
-                }
+                pool.query("UPDATE jadwal SET tanggalmulai=$1,tanggalselesai=$2,kegiatan=$3 WHERE id=$4", [tanggalMulai, tanggalAkhir, kegiatan, id], err => {
+                    if (err) {
+                        ret={
+                            status: err.code,
+                            results: err.message
+                        };
+                        res.json(ret)
+                    } else {
+                        ret = {
+                            status: 200,
+                            description: 'Data Updated',
+                            results: {
+                                id: id,
+                                tanggalMulai: tanggalMulai,
+                                tanggalAkhir: tanggalAkhir,
+                                kegiatan: kegiatan,
+                            }
+                        };
+                        res.status(200).json(ret)
+                    }
+                })
             }
             else{
                 ret = {
